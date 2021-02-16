@@ -83,6 +83,9 @@ public class FilterTracks extends Plugin implements Block, PluginBundled
 
     /**
      * Get enabled state (even partially) for a given track
+     * @param track segment of track
+     *
+     * @return boolean
      **/
     public static boolean isTrackEnabled(TrackSegment track)
     {
@@ -97,7 +100,7 @@ public class FilterTracks extends Plugin implements Block, PluginBundled
      * Filter given list of track on a specific criterion (keep tracks replying to the given
      * criterion)
      * 
-     * @param tracks
+     * @param track
      *        tracks to filter
      * @param criterion
      *        criterion to use to filter tracks

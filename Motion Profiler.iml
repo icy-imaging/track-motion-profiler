@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:icy-kernel:2.1.0" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.ehcache:ehcache:2.10.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:icy-bioformats:6.3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:icy-insubstantial:7.3.8" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:icy-vtk:6.3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij:1.52r" level="project" />
+    <orderEntry type="library" name="Maven: javax.media:jai-core:1.1.3" level="project" />
+    <orderEntry type="library" name="Maven: javax.media:jai-codec:1.1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:2.1.5-01" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-natives-linux-amd64:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-natives-linux-i586:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-natives-macosx-universal:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-natives-windows-amd64:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all-natives-windows-i586:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:2.1.5-01" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-linux-amd64:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-linux-i586:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-macosx-universal:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-windows-amd64:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-windows-i586:2.1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.22.0-GA" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.12" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs.swingx:swingx-all:1.6.5-1" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:ezplug:3.20.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.yannrichet:JMathPlot:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.yannrichet:JMathIO:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.yannrichet:JMathArray:1.0" level="project" />
+    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:track-manager:1.4.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:connected-components:4.8.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:blocks:5.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:spot-detection-utilities:1.1.6" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:quickhull:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:vecmath:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:jama:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:protocols:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.bioimageanalysis.icy:javadocparser:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:ochafik-util:0.12" level="project" />
+  </component>
+</module>

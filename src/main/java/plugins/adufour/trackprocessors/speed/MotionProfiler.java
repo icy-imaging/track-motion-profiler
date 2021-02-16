@@ -70,6 +70,10 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
      *        optional Z plot panel where we will draw the Z motion
      * @param globalPlotPanel
      *        optional global plot panel where we will draw all the tracks motion
+     *
+     * @return List of track statistics
+     * @throws IOException IOException
+     * @throws WriteException WriteException
      */
     public static List<TrackStatistic> computeTracksStatistics(Collection<TrackSegment> tracks, Sequence sequence,
             boolean computeSpeed, boolean ignoreFilteredDetection, Plot2DPanel xPlotPanel, Plot2DPanel yPlotPanel,
@@ -157,6 +161,8 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
      * @param globalPlotPanel
      *        optional global plot panel where we will draw all the tracks motion
      * @return the filled {@link WritableWorkbook} ready to save on disk.
+     * @throws IOException IOException
+     * @throws WriteException WriteException
      */
     public static WritableWorkbook getTrackMotionXLS(Collection<TrackSegment> tracks, Sequence sequence,
             boolean displaySpeed, boolean ignoreFilteredDetection, String outputPath, Plot2DPanel xPlotPanel,

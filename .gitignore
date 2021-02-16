@@ -1,2 +1,5 @@
 bin
 SpeedProfiler*.jar
+.classpath
+.project
+.idea/

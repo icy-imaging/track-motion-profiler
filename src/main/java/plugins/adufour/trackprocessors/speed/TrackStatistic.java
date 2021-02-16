@@ -243,7 +243,7 @@ public class TrackStatistic
         if (wantExtend)
         {
             // find track extent (largest distance between any 2 detections)
-            // O(n²) complexity, can take a long time :-(
+            // O(nÂ²) complexity, can take a long time :-(
             for (int i = 0; i < size; i++)
             {
                 for (int j = i + 1; j < size; j++)
