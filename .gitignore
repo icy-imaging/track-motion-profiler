@@ -3,3 +3,5 @@ SpeedProfiler*.jar
 .classpath
 .project
 .idea/
+.settings/
+/target/
