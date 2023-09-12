@@ -1,21 +1,22 @@
+/*
+ * Copyright (c) 2010-2023. Institut Pasteur.
+ *
+ * This file is part of Icy.
+ * Icy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Icy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Icy. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package plugins.adufour.trackprocessors.speed;
-
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
-import org.math.plot.Plot2DPanel;
-import org.math.plot.Plot3DPanel;
-import org.math.plot.PlotPanel;
 
 import icy.file.FileUtil;
 import icy.gui.component.ExcelTable;
@@ -29,13 +30,18 @@ import icy.system.IcyExceptionHandler;
 import icy.util.XLSUtil;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
+import org.math.plot.Plot2DPanel;
+import org.math.plot.Plot3DPanel;
+import org.math.plot.PlotPanel;
 import plugins.fab.trackmanager.PluginTrackManagerProcessor;
 
-public class MotionProfilerProcessor extends PluginTrackManagerProcessor implements PluginBundled
-{
-    // GUI
-    private JPanel options;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+public class MotionProfilerProcessor extends PluginTrackManagerProcessor implements PluginBundled {
     private JCheckBox useRealUnits;
     private JCheckBox showSpeed;
 
@@ -48,22 +54,13 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
     private Plot2DPanel zPlot = new Plot2DPanel();
     private JPanel globalTab = new JPanel();
     private PlotPanel globalPlot;
-    private JButton export = new JButton("Export statistics...");
 
     // internal
     XMLPreferences preferences;
 
-    private ActionListener updater = new ActionListener()
-    {
-        @Override
-        public void actionPerformed(ActionEvent arg0)
-        {
-            trackPool.fireTrackEditorProcessorChange();
-        }
-    };
+    private final ActionListener updater = arg0 -> trackPool.fireTrackEditorProcessorChange();
 
-    public MotionProfilerProcessor()
-    {
+    public MotionProfilerProcessor() {
         super();
 
         preferences = getPreferencesRoot();
@@ -72,9 +69,8 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         buildGui();
     }
 
-    void buildGui()
-    {
-        options = new JPanel();
+    void buildGui() {
+        final JPanel options = new JPanel();
         useRealUnits = new JCheckBox("Use real units");
         showSpeed = new JCheckBox("Show speed instead of displacement");
 
@@ -86,7 +82,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         zTab = new JPanel();
         zPlot = new Plot2DPanel();
         globalTab = new JPanel();
-        export = new JButton("Export statistics...");
+        final JButton export = new JButton("Export statistics...");
 
         // initialize tabs
         xTab.setLayout(new BoxLayout(xTab, BoxLayout.Y_AXIS));
@@ -103,7 +99,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         zPlot.setAxisLabels("Time", "Displacement along Z");
 
         // set the tab pane's height
-        Dimension dim = statistics.getPreferredSize();
+        final Dimension dim = statistics.getPreferredSize();
         dim.height = 900;
         statistics.setPreferredSize(dim);
 
@@ -125,50 +121,34 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         panel.add(statistics);
 
         // make the button do something
-        export.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        // Restore last used folder
-                        String xlsFolder = preferences.get("xlsFolder", null);
-                        String path = SaveDialog.chooseFile("Export motion data", xlsFolder, "Speed", ".xls");
+        export.addActionListener(arg0 -> new Thread(() -> {
+            // Restore last used folder
+            final String xlsFolder = preferences.get("xlsFolder", null);
+            final String path = SaveDialog.chooseFile("Export motion data", xlsFolder, "Speed", ".xls");
 
-                        if (path == null)
-                            return;
+            if (path == null)
+                return;
 
-                        // store the folder in the preferences
-                        preferences.put("xlsFolder", FileUtil.getDirectory(path));
+            // store the folder in the preferences
+            preferences.put("xlsFolder", FileUtil.getDirectory(path));
 
-                        AnnounceFrame message = new AnnounceFrame("Saving motion data...", 0);
-                        try
-                        {
-                            export(path);
-                        }
-                        finally
-                        {
-                            message.close();
-                        }
-                    }
-                }.start();
+            final AnnounceFrame message = new AnnounceFrame("Saving motion data...", 0);
+            try {
+                export(path);
             }
-        });
+            finally {
+                message.close();
+            }
+        }).start());
     }
 
     @Override
-    public void Close()
-    {
+    public void Close() {
         //
     }
 
     @Override
-    public void Compute()
-    {
+    public void Compute() {
         if (!isEnabled())
             return;
 
@@ -182,8 +162,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
 
         // remove / clean graphical components while we work on them
         panel.setVisible(false);
-        try
-        {
+        try {
             // prepare GUI to receive results
             globalTab.removeAll();
             xTab.removeAll();
@@ -195,27 +174,22 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
 
             final boolean show3D = ((sequence == null) || sequence.getSizeZ() > 1);
 
-            if (show3D)
-            {
-                if ((globalPlot == null) || (globalPlot instanceof Plot2DPanel))
-                {
+            if (show3D) {
+                if ((globalPlot == null) || (globalPlot instanceof Plot2DPanel)) {
                     globalPlot = new Plot3DPanel();
                     globalPlot.setAxisLabels("X", "Y", "Z");
                 }
                 // add plot Z panel
                 statistics.addTab("Along Z", zTab);
             }
-            else
-            {
-                if ((globalPlot == null) || (globalPlot instanceof Plot3DPanel))
-                {
+            else {
+                if ((globalPlot == null) || (globalPlot instanceof Plot3DPanel)) {
                     globalPlot = new Plot2DPanel();
                     globalPlot.setAxisLabels("X", "Y");
                 }
             }
 
-            try
-            {
+            try {
                 // dummy XLS file
                 final File tmpFile = File.createTempFile("Motion profiler", "xls");
                 // get workbook
@@ -229,23 +203,22 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
                 final WritableSheet zSheet = workbook.getSheet("Z");
 
                 // X display
-                ExcelTable xTable = new ExcelTable(xSheet);
+                final ExcelTable xTable = new ExcelTable(xSheet);
                 xTable.setPreferredSize(new Dimension(0, 200));
                 xTab.add(xTable);
                 xPlot.setPreferredSize(new Dimension(0, 300));
                 xTab.add(xPlot);
 
                 // Y display
-                ExcelTable yTable = new ExcelTable(ySheet);
+                final ExcelTable yTable = new ExcelTable(ySheet);
                 yTable.setPreferredSize(new Dimension(0, 200));
                 yTab.add(yTable);
                 yPlot.setPreferredSize(new Dimension(0, 300));
                 yTab.add(yPlot);
 
-                if (show3D)
-                {
+                if (show3D) {
                     // Z display
-                    ExcelTable zTable = new ExcelTable(zSheet);
+                    final ExcelTable zTable = new ExcelTable(zSheet);
                     zTable.setPreferredSize(new Dimension(0, 200));
                     zTab.add(zTable);
                     zPlot.setPreferredSize(new Dimension(0, 300));
@@ -253,7 +226,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
                 }
 
                 // global display
-                ExcelTable globalTable = new ExcelTable(globalSheet);
+                final ExcelTable globalTable = new ExcelTable(globalSheet);
                 globalTable.setPreferredSize(new Dimension(0, 200));
                 globalTab.add(globalTable);
                 globalPlot.setPreferredSize(new Dimension(0, 600));
@@ -264,58 +237,61 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
                 if (!tmpFile.delete())
                     tmpFile.deleteOnExit();
             }
-            catch (Exception e)
-            {
+            catch (final Exception e) {
                 System.err.println("[Motion Profiler] Unable to generate XLS motion statistics;");
                 IcyExceptionHandler.showErrorMessage(e, true);
-                return;
             }
         }
-        finally
-        {
+        finally {
             panel.setVisible(true);
         }
     }
 
     @Override
-    public void displaySequenceChanged()
-    {
+    public void displaySequenceChanged() {
         Compute();
     }
 
-    private WritableWorkbook getStatistics(String path, Plot2DPanel xPlotPanel, Plot2DPanel yPlotPanel,
-            Plot2DPanel zPlotPanel, PlotPanel globalPlotPanel) throws WriteException, IOException
-    {
+    private WritableWorkbook getStatistics(
+            final String path,
+            final Plot2DPanel xPlotPanel,
+            final Plot2DPanel yPlotPanel,
+            final Plot2DPanel zPlotPanel,
+            final PlotPanel globalPlotPanel
+    ) throws IOException {
         // get workbook from temp XLS file
-        return MotionProfiler.getTrackMotionXLS(trackPool.getTrackSegmentList(),
-                useRealUnits.isSelected() ? trackPool.getDisplaySequence() : null, showSpeed.isSelected(), true, path,
-                xPlotPanel, yPlotPanel, zPlotPanel, globalPlotPanel);
+        return MotionProfiler.getTrackMotionXLS(
+                trackPool.getTrackSegmentList(),
+                useRealUnits.isSelected() ? trackPool.getDisplaySequence() : null,
+                showSpeed.isSelected(),
+                true,
+                path,
+                xPlotPanel,
+                yPlotPanel,
+                zPlotPanel,
+                globalPlotPanel
+        );
     }
 
-    private WritableWorkbook getStatistics(String path) throws WriteException, IOException
-    {
+    private WritableWorkbook getStatistics(final String path) throws IOException {
         // get workbook from temp XLS file
         return getStatistics(path, null, null, null, null);
     }
 
-    void export(String path)
-    {
-        try
-        {
+    void export(final String path) {
+        try {
             // get workbook with wanted output path
             final WritableWorkbook wb = getStatistics(path);
             // save them
             XLSUtil.saveAndClose(wb);
         }
-        catch (Exception e)
-        {
+        catch (final Exception e) {
             MessageDialog.showDialog("Cannot export file", MessageDialog.ERROR_MESSAGE);
         }
     }
 
     @Override
-    public String getMainPluginClassName()
-    {
+    public String getMainPluginClassName() {
         return SpeedProfiler.class.getName();
     }
 }

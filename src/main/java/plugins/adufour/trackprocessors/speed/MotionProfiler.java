@@ -1,16 +1,22 @@
-/**
- * 
+/*
+ * Copyright (c) 2010-2023. Institut Pasteur.
+ *
+ * This file is part of Icy.
+ * Icy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Icy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Icy. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package plugins.adufour.trackprocessors.speed;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.math.plot.Plot2DPanel;
-import org.math.plot.PlotPanel;
 
 import icy.plugin.abstract_.Plugin;
 import icy.plugin.interface_.PluginBundled;
@@ -19,7 +25,8 @@ import icy.util.StringUtil;
 import icy.util.XLSUtil;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
+import org.math.plot.Plot2DPanel;
+import org.math.plot.PlotPanel;
 import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.vars.lang.Var;
@@ -29,11 +36,16 @@ import plugins.adufour.vars.lang.VarSequence;
 import plugins.fab.trackmanager.TrackGroup;
 import plugins.fab.trackmanager.TrackSegment;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @author Stephane
  */
-public class MotionProfiler extends Plugin implements Block, PluginBundled
-{
+public class MotionProfiler extends Plugin implements Block, PluginBundled {
     private static final int COL_TRACK_GP = 0;
     private static final int COL_TRACK_ID = 1;
     private static final int COL_TRACK_START = 2;
@@ -50,50 +62,43 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
     /**
      * Computes and returns motion/speed statistics from the given list of {@link TrackSegment}.<br>
      * Note that if may contains <code>null</code> entry for filtered tracks.
-     * 
-     * @param tracks
-     *        tracks we want to export data fort
-     * @param sequence
-     *        sequence used to retrieve real units from (using pixel size information from
-     *        metadata).<br>
-     *        Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
-     * @param computeSpeed
-     *        compute speed information instead of displacement
-     * @param ignoreFilteredDetection
-     *        do not compute statistics for filtered detection (see
-     *        {@link TrackSegment#isAllDetectionEnabled()})
-     * @param xPlotPanel
-     *        optional X plot panel where we will draw the X motion
-     * @param yPlotPanel
-     *        optional Y plot panel where we will draw the Y motion
-     * @param zPlotPanel
-     *        optional Z plot panel where we will draw the Z motion
-     * @param globalPlotPanel
-     *        optional global plot panel where we will draw all the tracks motion
      *
+     * @param tracks                  tracks we want to export data fort
+     * @param sequence                sequence used to retrieve real units from (using pixel size information from
+     *                                metadata).<br>
+     *                                Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
+     * @param computeSpeed            compute speed information instead of displacement
+     * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
+     *                                {@link TrackSegment#isAllDetectionEnabled()})
+     * @param xPlotPanel              optional X plot panel where we will draw the X motion
+     * @param yPlotPanel              optional Y plot panel where we will draw the Y motion
+     * @param zPlotPanel              optional Z plot panel where we will draw the Z motion
+     * @param globalPlotPanel         optional global plot panel where we will draw all the tracks motion
      * @return List of track statistics
-     * @throws IOException IOException
-     * @throws WriteException WriteException
      */
-    public static List<TrackStatistic> computeTracksStatistics(Collection<TrackSegment> tracks, Sequence sequence,
-            boolean computeSpeed, boolean ignoreFilteredDetection, Plot2DPanel xPlotPanel, Plot2DPanel yPlotPanel,
-            Plot2DPanel zPlotPanel, PlotPanel globalPlotPanel) throws IOException, WriteException
-    {
-        final List<TrackStatistic> result = new ArrayList<TrackStatistic>();
+    public static List<TrackStatistic> computeTracksStatistics(
+            final Collection<TrackSegment> tracks,
+            final Sequence sequence,
+            final boolean computeSpeed,
+            final boolean ignoreFilteredDetection,
+            final Plot2DPanel xPlotPanel,
+            final Plot2DPanel yPlotPanel,
+            final Plot2DPanel zPlotPanel,
+            final PlotPanel globalPlotPanel
+    ) {
+        final List<TrackStatistic> result = new ArrayList<>();
         final double xScale;
         final double yScale;
         final double zScale;
         final double tScale;
 
-        if (sequence != null)
-        {
+        if (sequence != null) {
             xScale = sequence.getPixelSizeX();
             yScale = sequence.getPixelSizeY();
             zScale = sequence.getPixelSizeZ();
             tScale = sequence.getTimeInterval();
         }
-        else
-        {
+        else {
             xScale = 1d;
             yScale = 1d;
             zScale = 1d;
@@ -111,13 +116,23 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
             globalPlotPanel.removeAllPlots();
 
         int index = 0;
-        for (TrackSegment track : tracks)
-        {
-            final TrackStatistic stat = TrackStatistic.computeStatistic(track, xScale, yScale, zScale, tScale, true,
-                    computeSpeed, ignoreFilteredDetection, xPlotPanel, yPlotPanel, zPlotPanel, globalPlotPanel);
+        for (final TrackSegment track : tracks) {
+            final TrackStatistic stat = TrackStatistic.computeStatistic(
+                    track,
+                    xScale,
+                    yScale,
+                    zScale,
+                    tScale,
+                    true,
+                    computeSpeed,
+                    ignoreFilteredDetection,
+                    xPlotPanel,
+                    yPlotPanel,
+                    zPlotPanel,
+                    globalPlotPanel
+            );
 
-            if (stat != null)
-            {
+            if (stat != null) {
                 // fill missing information
                 if (StringUtil.isEmpty(stat.groupName))
                     stat.groupName = "TrackGroup";
@@ -138,37 +153,33 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
      * Get motion data in XLS (WorkBook) format from the given list of {@link TrackSegment}.<br>
      * WARNING: you need to explicitly use {@link XLSUtil#saveAndClose(WritableWorkbook)} method to
      * save the obtained XLS into <code>outputPath</code>
-     * 
-     * @param tracks
-     *        tracks we want to export data fort
-     * @param sequence
-     *        sequence used to retrieve real units from (using pixel size information from
-     *        metadata).<br>
-     *        Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
-     * @param displaySpeed
-     *        display speed information instead of displacement
-     * @param ignoreFilteredDetection
-     *        do not compute statistics for filtered detection (see
-     *        {@link TrackSegment#isAllDetectionEnabled()})
-     * @param outputPath
-     *        XLS output path (should contains <i>.xls</i> extension)
-     * @param xPlotPanel
-     *        optional X plot panel where we will draw the X motion
-     * @param yPlotPanel
-     *        optional Y plot panel where we will draw the Y motion
-     * @param zPlotPanel
-     *        optional Z plot panel where we will draw the Z motion
-     * @param globalPlotPanel
-     *        optional global plot panel where we will draw all the tracks motion
+     *
+     * @param tracks                  tracks we want to export data fort
+     * @param sequence                sequence used to retrieve real units from (using pixel size information from
+     *                                metadata).<br>
+     *                                Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
+     * @param displaySpeed            display speed information instead of displacement
+     * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
+     *                                {@link TrackSegment#isAllDetectionEnabled()})
+     * @param outputPath              XLS output path (should contains <i>.xls</i> extension)
+     * @param xPlotPanel              optional X plot panel where we will draw the X motion
+     * @param yPlotPanel              optional Y plot panel where we will draw the Y motion
+     * @param zPlotPanel              optional Z plot panel where we will draw the Z motion
+     * @param globalPlotPanel         optional global plot panel where we will draw all the tracks motion
      * @return the filled {@link WritableWorkbook} ready to save on disk.
      * @throws IOException IOException
-     * @throws WriteException WriteException
      */
-    public static WritableWorkbook getTrackMotionXLS(Collection<TrackSegment> tracks, Sequence sequence,
-            boolean displaySpeed, boolean ignoreFilteredDetection, String outputPath, Plot2DPanel xPlotPanel,
-            Plot2DPanel yPlotPanel, Plot2DPanel zPlotPanel, PlotPanel globalPlotPanel)
-            throws IOException, WriteException
-    {
+    public static WritableWorkbook getTrackMotionXLS(
+            final Collection<TrackSegment> tracks,
+            final Sequence sequence,
+            final boolean displaySpeed,
+            final boolean ignoreFilteredDetection,
+            final String outputPath,
+            final Plot2DPanel xPlotPanel,
+            final Plot2DPanel yPlotPanel,
+            final Plot2DPanel zPlotPanel,
+            final PlotPanel globalPlotPanel
+    ) throws IOException {
         // create the workbook
         final WritableWorkbook book = XLSUtil.createWorkbook(outputPath);
 
@@ -180,11 +191,10 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
 
         // write headers
         final String timeUnit = (sequence != null) ? "sec" : "frames";
-        final String spaceUnit = (sequence != null) ? "\u03BCm" : "px";
-        final String speedUnit = displaySpeed ? "speed (" + spaceUnit + "/" + timeUnit + ")"
-                : "disp. (" + spaceUnit + ")";
+        final String spaceUnit = (sequence != null) ? "μm" : "px";
+        final String speedUnit = displaySpeed ? "speed (" + spaceUnit + "/" + timeUnit + ")" : "disp. (" + spaceUnit + ")";
 
-        final List<WritableSheet> sheets = new ArrayList<WritableSheet>(4);
+        final List<WritableSheet> sheets = new ArrayList<>(4);
 
         sheets.add(globalSheet);
         sheets.add(xSheet);
@@ -192,8 +202,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
         sheets.add(zSheet);
 
         // write headers
-        for (WritableSheet sheet : sheets)
-        {
+        for (final WritableSheet sheet : sheets) {
             XLSUtil.setCellString(sheet, COL_TRACK_GP, 0, "Group");
             XLSUtil.setCellString(sheet, COL_TRACK_ID, 0, "Track #");
             XLSUtil.setCellString(sheet, COL_TRACK_START, 0, "Start (" + timeUnit + ")");
@@ -208,12 +217,19 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
             XLSUtil.setCellString(sheet, COL_AVG_DISP, 0, "Avg. " + speedUnit);
         }
 
-        final List<TrackStatistic> stats = computeTracksStatistics(tracks, sequence, displaySpeed,
-                ignoreFilteredDetection, xPlotPanel, yPlotPanel, zPlotPanel, globalPlotPanel);
+        final List<TrackStatistic> stats = computeTracksStatistics(
+                tracks,
+                sequence,
+                displaySpeed,
+                ignoreFilteredDetection,
+                xPlotPanel,
+                yPlotPanel,
+                zPlotPanel,
+                globalPlotPanel
+        );
 
         int row = 1;
-        for (TrackStatistic ts : stats)
-        {
+        for (final TrackStatistic ts : stats) {
             if (ts == null)
                 continue;
 
@@ -288,27 +304,35 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
      * Get motion data in XLS (WorkBook) format from the given list of {@link TrackSegment}.<br>
      * WARNING: you need to explicitly use {@link XLSUtil#saveAndClose(WritableWorkbook)} method to
      * save the obtained XLS into <code>outputPath</code>
-     * 
-     * @param tracks
-     *        tracks we want to export data fort
-     * @param sequence
-     *        sequence used to retrieve real units from (using pixel size information from
-     *        metadata).<br>
-     *        Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
-     * @param displaySpeed
-     *        display speed information instead of displacement
-     * @param ignoreFilteredDetection
-     *        do not compute statistics for filtered detection (see
-     *        {@link TrackSegment#isAllDetectionEnabled()})
-     * @param outputPath
-     *        XLS output path (should contains <i>.xls</i> extension)
+     *
+     * @param tracks                  tracks we want to export data fort
+     * @param sequence                sequence used to retrieve real units from (using pixel size information from
+     *                                metadata).<br>
+     *                                Keep this value to <code>null</code> if you want use raw pixel / frame units instead.
+     * @param displaySpeed            display speed information instead of displacement
+     * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
+     *                                {@link TrackSegment#isAllDetectionEnabled()})
+     * @param outputPath              XLS output path (should contains <i>.xls</i> extension)
      * @return the filled {@link WritableWorkbook} ready to save on disk.
      */
-    public static WritableWorkbook getTrackMotionXLS(Collection<TrackSegment> tracks, Sequence sequence,
-            boolean displaySpeed, boolean ignoreFilteredDetection, String outputPath) throws WriteException, IOException
-    {
-        return getTrackMotionXLS(tracks, sequence, displaySpeed, ignoreFilteredDetection, outputPath, null, null, null,
-                null);
+    public static WritableWorkbook getTrackMotionXLS(
+            final Collection<TrackSegment> tracks,
+            final Sequence sequence,
+            final boolean displaySpeed,
+            final boolean ignoreFilteredDetection,
+            final String outputPath
+    ) throws IOException {
+        return getTrackMotionXLS(
+                tracks,
+                sequence,
+                displaySpeed,
+                ignoreFilteredDetection,
+                outputPath,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     // VAR
@@ -317,26 +341,22 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
     public final VarBoolean displaySpeed;
     public final VarMutable outputFile;
 
-    public MotionProfiler()
-    {
+    public MotionProfiler() {
         super();
 
-        tracks = new Var<TrackGroup>("Track group", new TrackGroup(null));
+        tracks = new Var<>("Track group", new TrackGroup(null));
         sequence = new VarSequence("Sequence (for units info.)", null);
         displaySpeed = new VarBoolean("Get speed instead of disp.", false);
-        outputFile = new VarMutable("Output file", null)
-        {
+        outputFile = new VarMutable("Output file", null) {
             @Override
-            public boolean isAssignableFrom(@SuppressWarnings("rawtypes") Var source)
-            {
+            public boolean isAssignableFrom(final Var source) {
                 return (String.class == source.getType()) || (File.class == source.getType());
             }
         };
     }
 
     @Override
-    public void declareInput(VarList inputMap)
-    {
+    public void declareInput(final VarList inputMap) {
         inputMap.add("trackgroup", tracks);
         inputMap.add("sequence", sequence);
         inputMap.add("displaySpeed", displaySpeed);
@@ -344,24 +364,21 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
     }
 
     @Override
-    public void declareOutput(VarList outputMap)
-    {
+    public void declareOutput(final VarList outputMap) {
         // nothing here
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         // execution from protocol
         final TrackGroup trackGroup = tracks.getValue();
         final Object obj = outputFile.getValue();
 
-        if ((trackGroup != null) && (obj != null))
-        {
+        if ((trackGroup != null) && (obj != null)) {
             // build the list of enabled tracks
-            final List<TrackSegment> tracksToExport = new ArrayList<TrackSegment>();
+            final List<TrackSegment> tracksToExport = new ArrayList<>();
 
-            for (TrackSegment track : trackGroup.getTrackSegmentList())
+            for (final TrackSegment track : trackGroup.getTrackSegmentList())
                 if (track.isAllDetectionEnabled())
                     tracksToExport.add(track);
 
@@ -372,24 +389,26 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled
             else
                 f = (File) obj;
 
-            try
-            {
+            try {
                 // get track motion info
-                final WritableWorkbook wb = getTrackMotionXLS(tracksToExport, sequence.getValue(),
-                        displaySpeed.getValue().booleanValue(), true, f.getAbsolutePath());
+                final WritableWorkbook wb = getTrackMotionXLS(
+                        tracksToExport,
+                        sequence.getValue(),
+                        displaySpeed.getValue(),
+                        true,
+                        f.getAbsolutePath()
+                );
                 // save them
                 XLSUtil.saveAndClose(wb);
             }
-            catch (Exception e)
-            {
+            catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
     @Override
-    public String getMainPluginClassName()
-    {
+    public String getMainPluginClassName() {
         return SpeedProfiler.class.getName();
     }
 }

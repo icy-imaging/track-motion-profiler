@@ -5,3 +5,4 @@ SpeedProfiler*.jar
 .idea/
 .settings/
 /target/
+**/.DS_Store

@@ -1,20 +1,35 @@
+/*
+ * Copyright (c) 2010-2023. Institut Pasteur.
+ *
+ * This file is part of Icy.
+ * Icy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Icy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Icy. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package plugins.adufour.trackprocessors.speed;
 
-import java.awt.Color;
-
+import icy.math.ArrayMath;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
 import org.math.plot.PlotPanel;
-
-import icy.math.ArrayMath;
 import plugins.fab.trackmanager.TrackGroup;
 import plugins.fab.trackmanager.TrackSegment;
 import plugins.nchenouard.spot.Detection;
 
-public class TrackStatistic
-{
-    public static class SingleStatistic
-    {
+import java.awt.*;
+
+public class TrackStatistic {
+    public static class SingleStatistic {
         public double totalDisp;
         public double netDisp;
         public double linearity;
@@ -37,8 +52,7 @@ public class TrackStatistic
     public final SingleStatistic y;
     public final SingleStatistic z;
 
-    public TrackStatistic()
-    {
+    public TrackStatistic() {
         super();
 
         global = new SingleStatistic();
@@ -49,52 +63,49 @@ public class TrackStatistic
 
     /**
      * Compute and return motion/speed statistic from the given list of {@link TrackSegment}.
-     * 
-     * @param track
-     *        track we want to compute statistic for
-     * @param xScale
-     *        X scaling ratio (pixel size X in um/px) to convert displacement in real unit (instead
-     *        of pixel).
-     * @param yScale
-     *        Y scaling ratio (pixel size Y in um/px) to convert displacement in real unit (instead
-     *        of pixel).
-     * @param zScale
-     *        Z scaling ratio (pixel size Z in um/px) to convert displacement in real unit (instead
-     *        of pixel).
-     * @param tInterval
-     *        Time interval between 2 frames (second/frame) to compute speed instead of
-     *        displacement.<br>
-     *        Set it to <code>0</code> if you want mix/max/mean displacement otherwise statistic
-     *        return min/max/mean speed using the provided time interval.
-     * @param wantExtend
-     *        specify that we want the extend / search radius information (take sometime to compute)
-     * @param computeSpeed
-     *        compute speed information instead of displacement
-     * @param ignoreFilteredDetection
-     *        do not compute statistics for filtered detection (see
-     *        {@link TrackSegment#isAllDetectionEnabled()})
-     * @param xPlotPanel
-     *        optional X plot panel where we will draw the X motion
-     * @param yPlotPanel
-     *        optional Y plot panel where we will draw the Y motion
-     * @param zPlotPanel
-     *        optional Z plot panel where we will draw the Z motion
-     * @param globalPlotPanel
-     *        optional global plot panel where we will draw all the tracks motion
+     *
+     * @param track                   track we want to compute statistic for
+     * @param xScale                  X scaling ratio (pixel size X in um/px) to convert displacement in real unit (instead
+     *                                of pixel).
+     * @param yScale                  Y scaling ratio (pixel size Y in um/px) to convert displacement in real unit (instead
+     *                                of pixel).
+     * @param zScale                  Z scaling ratio (pixel size Z in um/px) to convert displacement in real unit (instead
+     *                                of pixel).
+     * @param tInterval               Time interval between 2 frames (second/frame) to compute speed instead of
+     *                                displacement.<br>
+     *                                Set it to <code>0</code> if you want mix/max/mean displacement otherwise statistic
+     *                                return min/max/mean speed using the provided time interval.
+     * @param wantExtend              specify that we want the extend / search radius information (take sometime to compute)
+     * @param computeSpeed            compute speed information instead of displacement
+     * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
+     *                                {@link TrackSegment#isAllDetectionEnabled()})
+     * @param xPlotPanel              optional X plot panel where we will draw the X motion
+     * @param yPlotPanel              optional Y plot panel where we will draw the Y motion
+     * @param zPlotPanel              optional Z plot panel where we will draw the Z motion
+     * @param globalPlotPanel         optional global plot panel where we will draw all the tracks motion
      * @return motion/speed statistics for the given track, it can return <code>null</code> if track
-     *         is completely filtered (see <i>ignoreFilteredDetection</i> parameter).
+     * is completely filtered (see <i>ignoreFilteredDetection</i> parameter).
      */
-    public static TrackStatistic computeStatistic(TrackSegment track, double xScale, double yScale, double zScale,
-            double tInterval, boolean wantExtend, boolean computeSpeed, boolean ignoreFilteredDetection,
-            Plot2DPanel xPlotPanel, Plot2DPanel yPlotPanel, Plot2DPanel zPlotPanel, PlotPanel globalPlotPanel)
-    {
+    public static TrackStatistic computeStatistic(
+            final TrackSegment track,
+            final double xScale,
+            final double yScale,
+            final double zScale,
+            final double tInterval,
+            final boolean wantExtend,
+            final boolean computeSpeed,
+            final boolean ignoreFilteredDetection,
+            final Plot2DPanel xPlotPanel,
+            final Plot2DPanel yPlotPanel,
+            final Plot2DPanel zPlotPanel,
+            final PlotPanel globalPlotPanel
+    ) {
         final int nbDetections = track.getDetectionList().size();
         final int firstIndex;
         final int lastIndex;
         final int size;
 
-        if (ignoreFilteredDetection)
-        {
+        if (ignoreFilteredDetection) {
             int i = 0;
 
             // get start point
@@ -107,8 +118,7 @@ public class TrackStatistic
             lastIndex = i - 1;
             size = i - firstIndex;
 
-            while (i < nbDetections)
-            {
+            while (i < nbDetections) {
                 // inconsistent filtering (hole inside track) --> can't process this track
                 if (track.getDetectionAt(i).isEnabled())
                     return null;
@@ -116,8 +126,7 @@ public class TrackStatistic
                 i++;
             }
         }
-        else
-        {
+        else {
             // process all
             firstIndex = 0;
             lastIndex = nbDetections - 1;
@@ -146,16 +155,14 @@ public class TrackStatistic
         final double[] zDisp = new double[size - 1];
 
         // accumulate data here
-        for (int i = 0; i < size; i++)
-        {
+        for (int i = 0; i < size; i++) {
             final Detection det = track.getDetectionAt(i + firstIndex);
 
             xData[i] = det.getX() * xScale;
             yData[i] = det.getY() * yScale;
             zData[i] = det.getZ() * zScale;
 
-            if (i > 0)
-            {
+            if (i > 0) {
                 final int j = i - 1;
 
                 // retrieve displacement from previous position
@@ -173,8 +180,7 @@ public class TrackStatistic
         result.duration = (size - 1);
 
         // real unit ?
-        if (tInterval != 0d)
-        {
+        if (tInterval != 0d) {
             result.startTime *= tInterval;
             result.endTime *= tInterval;
             result.duration *= tInterval;
@@ -217,8 +223,7 @@ public class TrackStatistic
         global.meanDispOrSpeed = ArrayMath.mean(disp);
 
         // prefer speed instead of displacement ? --> divide by time then...
-        if (computeSpeed && (tInterval != 0d))
-        {
+        if (computeSpeed && (tInterval != 0d)) {
             x.minDispOrSpeed /= tInterval;
             y.minDispOrSpeed /= tInterval;
             z.minDispOrSpeed /= tInterval;
@@ -240,14 +245,11 @@ public class TrackStatistic
         double zSearchRadius = 0d;
         double searchRadius = 0d;
 
-        if (wantExtend)
-        {
+        if (wantExtend) {
             // find track extent (largest distance between any 2 detections)
             // O(n²) complexity, can take a long time :-(
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = i + 1; j < size; j++)
-                {
+            for (int i = 0; i < size; i++) {
+                for (int j = i + 1; j < size; j++) {
                     final double dx = Math.abs(xData[i] - xData[j]);
                     final double dy = Math.abs(yData[i] - yData[j]);
                     final double dz = Math.abs(zData[i] - zData[j]);
@@ -276,15 +278,13 @@ public class TrackStatistic
         final Color color = track.getFirstDetection().getColor();
         final TrackGroup group = track.getOwnerTrackGroup();
 
-        if (group != null)
-        {
+        if (group != null) {
             // group name
             result.groupName = group.getDescription();
             // track id
             result.id = group.getTrackSegmentList().indexOf(track);
         }
-        else
-        {
+        else {
             // default empty values
             result.groupName = "";
             result.id = -1;

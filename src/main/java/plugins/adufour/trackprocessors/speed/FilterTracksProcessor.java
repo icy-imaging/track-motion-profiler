@@ -1,19 +1,24 @@
+/*
+ * Copyright (c) 2010-2023. Institut Pasteur.
+ *
+ * This file is part of Icy.
+ * Icy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Icy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Icy. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package plugins.adufour.trackprocessors.speed;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import icy.gui.component.NumberTextField;
-import icy.gui.component.NumberTextField.ValueChangeListener;
 import icy.main.Icy;
 import icy.painter.Overlay;
 import icy.plugin.interface_.PluginBundled;
@@ -23,34 +28,29 @@ import plugins.adufour.trackprocessors.speed.FilterTracks.Criterion;
 import plugins.fab.trackmanager.PluginTrackManagerProcessor;
 import plugins.fab.trackmanager.TrackSegment;
 
-public class FilterTracksProcessor extends PluginTrackManagerProcessor implements PluginBundled
-{
-    // GUI
-    private JPanel options;
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FilterTracksProcessor extends PluginTrackManagerProcessor implements PluginBundled {
     private JLabel dispUnit;
-    private JPanel filter_panel;
 
     // VAR
     private JCheckBox useRealUnits;
-    private JComboBox filter_criterion;
-    private JComboBox filter_operation;
+    private JComboBox<Criterion> filter_criterion;
+    private JComboBox<ComparisonType> filter_operation;
     private NumberTextField filter_value;
 
     // INTERNAL
     private final ActionListener updater;
 
-    public FilterTracksProcessor()
-    {
+    public FilterTracksProcessor() {
         super();
 
-        updater = new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                updateUnit();
-                trackPool.fireTrackEditorProcessorChange();
-            }
+        updater = arg0 -> {
+            updateUnit();
+            trackPool.fireTrackEditorProcessorChange();
         };
         // discardedTracks = new HashSet<TrackSegment>();
 
@@ -61,16 +61,16 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
         updateUnit();
     }
 
-    private void buildGui()
-    {
-        options = new JPanel();
-        filter_panel = new JPanel();
+    private void buildGui() {
+        // GUI
+        final JPanel options = new JPanel();
+        final JPanel filter_panel = new JPanel();
         dispUnit = new JLabel();
 
-        useRealUnits = new JCheckBox("Use real units (\u03BCm/sec)", false);
+        useRealUnits = new JCheckBox("Use real units (μm/sec)", false);
         useRealUnits.addActionListener(updater);
-        filter_criterion = new JComboBox(Criterion.values());
-        filter_operation = new JComboBox(ComparisonType.values());
+        filter_criterion = new JComboBox<>(Criterion.values());
+        filter_operation = new JComboBox<>(ComparisonType.values());
         filter_value = new NumberTextField(false);
 
         // OPTIONS
@@ -90,14 +90,9 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
         filter_panel.add(filter_value);
         filter_panel.add(dispUnit);
         filter_value.setNumericValue(3);
-        filter_value.addValueListener(new ValueChangeListener()
-        {
-            @Override
-            public void valueChanged(double newValue, boolean validate)
-            {
-                if (validate)
-                    trackPool.fireTrackEditorProcessorChange();
-            }
+        filter_value.addValueListener((newValue, validate) -> {
+            if (validate)
+                trackPool.fireTrackEditorProcessorChange();
         });
 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -105,10 +100,10 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
         panel.add(filter_panel);
     }
 
-    void updateUnit()
-    {
-        switch ((Criterion) filter_criterion.getSelectedItem())
-        {
+    void updateUnit() {
+        final Criterion item = (Criterion) filter_criterion.getSelectedItem();
+        assert item != null;
+        switch (item) {
             case CRITERION_T_START:
             case CRITERION_CURRENT_T:
             case CRITERION_T_END:
@@ -119,13 +114,13 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
             case CRITERION_EXTENT:
             case CRITERION_TOT_DISP:
             case CRITERION_NET_DISP:
-                dispUnit.setText(useRealUnits.isSelected() ? "\u03BCm" : "px");
+                dispUnit.setText(useRealUnits.isSelected() ? "μm" : "px");
                 break;
 
             case CRITERION_MIN_DISP:
             case CRITERION_MAX_DISP:
             case CRITERION_AVG_DISP:
-                dispUnit.setText(useRealUnits.isSelected() ? "\u03BCm/sec" : "px/frame");
+                dispUnit.setText(useRealUnits.isSelected() ? "μm/sec" : "px/frame");
                 break;
 
             case CRITERION_LINEARITY:
@@ -139,8 +134,7 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
     }
 
     @Override
-    public void Compute()
-    {
+    public void Compute() {
         if (!isEnabled())
             return;
 
@@ -153,9 +147,9 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
         useRealUnits.setEnabled(sequence != null);
 
         // build the list of enabled tracks
-        final List<TrackSegment> tracksToFilter = new ArrayList<TrackSegment>();
+        final List<TrackSegment> tracksToFilter = new ArrayList<>();
 
-        for (TrackSegment ts : this.trackPool.getTrackSegmentList())
+        for (final TrackSegment ts : this.trackPool.getTrackSegmentList())
             if (FilterTracks.isTrackEnabled(ts))
                 tracksToFilter.add(ts);
 
@@ -168,20 +162,17 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
     }
 
     @Override
-    public void Close()
-    {
+    public void Close() {
         // nothing to do here
     }
 
     @Override
-    public void displaySequenceChanged()
-    {
+    public void displaySequenceChanged() {
         Compute();
     }
 
     @Override
-    public String getMainPluginClassName()
-    {
+    public String getMainPluginClassName() {
         return SpeedProfiler.class.getName();
     }
 }

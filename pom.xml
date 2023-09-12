@@ -6,20 +6,17 @@
 
     <!-- Inherited Icy Parent POM -->
     <parent>
-		<artifactId>pom-icy</artifactId>
+        <artifactId>pom-icy</artifactId>
         <groupId>org.bioimageanalysis.icy</groupId>
-        <version>2.1.0</version>
-	</parent>
+        <version>2.2.0</version>
+    </parent>
 
     <!-- Project Information -->
     <artifactId>motion-profiler</artifactId>
-    <version>4.2.0</version>
-
-    <packaging>jar</packaging>
+    <version>5.0.0</version>
 
     <name>Motion Profiler</name>
     <description>Convert ROI to a Distance Map</description>
-    <url></url>
     <inceptionYear>2020</inceptionYear>
 
     <organization>
@@ -61,20 +58,8 @@
         </developer>
     </developers>
 
-    <!-- Project properties -->
-    <properties>
-
-    </properties>
-
     <!-- List of project's dependencies -->
     <dependencies>
-        <!-- The core of Icy -->
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>icy-kernel</artifactId>
-			<version>${icy-kernel.version}</version>
-        </dependency>
-
         <!-- The EzPlug library, simplifies writing UI for Icy plugins. -->
         <dependency>
             <groupId>org.bioimageanalysis.icy</groupId>
@@ -82,15 +67,19 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.yannrichet</groupId>
-            <artifactId>JMathPlot</artifactId>
-            <version>1.0.1</version>
+            <groupId>org.bioimageanalysis.icy</groupId>
+            <artifactId>protocols</artifactId>
         </dependency>
-		
-		<dependency>
-			<groupId>net.sourceforge.jexcelapi</groupId>
-			<artifactId>jxl</artifactId>
-		</dependency>
+
+        <dependency>
+            <groupId>org.bioimageanalysis.icy</groupId>
+            <artifactId>icy-jmath</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.bioimageanalysis.icy</groupId>
