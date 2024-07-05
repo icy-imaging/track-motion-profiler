@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,11 +18,12 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.gui.component.NumberTextField;
-import icy.main.Icy;
-import icy.painter.Overlay;
-import icy.plugin.interface_.PluginBundled;
-import icy.sequence.Sequence;
+import org.bioimageanalysis.icy.Icy;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.gui.component.field.NumberTextField;
+import org.bioimageanalysis.icy.model.overlay.Overlay;
+import org.bioimageanalysis.icy.model.sequence.Sequence;
 import plugins.adufour.trackprocessors.speed.FilterTracks.ComparisonType;
 import plugins.adufour.trackprocessors.speed.FilterTracks.Criterion;
 import plugins.fab.trackmanager.PluginTrackManagerProcessor;
@@ -33,7 +34,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterTracksProcessor extends PluginTrackManagerProcessor implements PluginBundled {
+@IcyPluginName("Filter Tracks Processor")
+@IcyPluginIcon(path = "/motion-profiler.png")
+public class FilterTracksProcessor extends PluginTrackManagerProcessor {
     private JLabel dispUnit;
 
     // VAR
@@ -169,10 +172,5 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor implement
     @Override
     public void displaySequenceChanged() {
         Compute();
-    }
-
-    @Override
-    public String getMainPluginClassName() {
-        return SpeedProfiler.class.getName();
     }
 }

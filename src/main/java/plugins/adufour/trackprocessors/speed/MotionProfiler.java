@@ -18,13 +18,15 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.plugin.abstract_.Plugin;
-import icy.plugin.interface_.PluginBundled;
-import icy.sequence.Sequence;
-import icy.util.StringUtil;
-import icy.util.XLSUtil;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.bioimageanalysis.icy.common.string.StringUtil;
+import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.io.xls.XLSXUtil;
+import org.bioimageanalysis.icy.model.sequence.Sequence;
+import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.PlotPanel;
 import plugins.adufour.blocks.lang.Block;
@@ -43,9 +45,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Stephane
+ * @author Stephane Dallongeville
  */
-public class MotionProfiler extends Plugin implements Block, PluginBundled {
+@IcyPluginName("Motion Profiler")
+@IcyPluginIcon(path = "/motion-profiler.png")
+public class MotionProfiler extends Plugin implements Block {
     private static final int COL_TRACK_GP = 0;
     private static final int COL_TRACK_ID = 1;
     private static final int COL_TRACK_START = 2;
@@ -76,7 +80,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
      * @param globalPlotPanel         optional global plot panel where we will draw all the tracks motion
      * @return List of track statistics
      */
-    public static List<TrackStatistic> computeTracksStatistics(
+    public static @NotNull List<TrackStatistic> computeTracksStatistics(
             final Collection<TrackSegment> tracks,
             final Sequence sequence,
             final boolean computeSpeed,
@@ -151,7 +155,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
 
     /**
      * Get motion data in XLS (WorkBook) format from the given list of {@link TrackSegment}.<br>
-     * WARNING: you need to explicitly use {@link XLSUtil#saveAndClose(WritableWorkbook)} method to
+     * WARNING: you need to explicitly use {@link XLSXUtil#saveAndClose(Workbook, File)} method to
      * save the obtained XLS into <code>outputPath</code>
      *
      * @param tracks                  tracks we want to export data fort
@@ -161,15 +165,15 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
      * @param displaySpeed            display speed information instead of displacement
      * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
      *                                {@link TrackSegment#isAllDetectionEnabled()})
-     * @param outputPath              XLS output path (should contains <i>.xls</i> extension)
+     * @param outputPath              XLSX output path (should contains <i>.xlsx</i> extension)
      * @param xPlotPanel              optional X plot panel where we will draw the X motion
      * @param yPlotPanel              optional Y plot panel where we will draw the Y motion
      * @param zPlotPanel              optional Z plot panel where we will draw the Z motion
      * @param globalPlotPanel         optional global plot panel where we will draw all the tracks motion
-     * @return the filled {@link WritableWorkbook} ready to save on disk.
+     * @return the filled {@link Workbook} ready to save on disk.
      * @throws IOException IOException
      */
-    public static WritableWorkbook getTrackMotionXLS(
+    public static @NotNull Workbook getTrackMotionXLS(
             final Collection<TrackSegment> tracks,
             final Sequence sequence,
             final boolean displaySpeed,
@@ -181,20 +185,26 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
             final PlotPanel globalPlotPanel
     ) throws IOException {
         // create the workbook
-        final WritableWorkbook book = XLSUtil.createWorkbook(outputPath);
+        final File XLSFile = new File(outputPath);
+
+        final Workbook book;
+        if (XLSFile.exists())
+            book = XLSXUtil.loadWorkbookForWrite(XLSFile);
+        else
+            book = XLSXUtil.createWorkbook();
 
         // create the sheets
-        final WritableSheet globalSheet = XLSUtil.createNewPage(book, "Global");
-        final WritableSheet xSheet = XLSUtil.createNewPage(book, "X");
-        final WritableSheet ySheet = XLSUtil.createNewPage(book, "Y");
-        final WritableSheet zSheet = XLSUtil.createNewPage(book, "Z");
+        final Sheet globalSheet = XLSXUtil.createNewPage(book, "Global");
+        final Sheet xSheet = XLSXUtil.createNewPage(book, "X");
+        final Sheet ySheet = XLSXUtil.createNewPage(book, "Y");
+        final Sheet zSheet = XLSXUtil.createNewPage(book, "Z");
 
         // write headers
         final String timeUnit = (sequence != null) ? "sec" : "frames";
         final String spaceUnit = (sequence != null) ? "μm" : "px";
         final String speedUnit = displaySpeed ? "speed (" + spaceUnit + "/" + timeUnit + ")" : "disp. (" + spaceUnit + ")";
 
-        final List<WritableSheet> sheets = new ArrayList<>(4);
+        final List<Sheet> sheets = new ArrayList<>(4);
 
         sheets.add(globalSheet);
         sheets.add(xSheet);
@@ -202,19 +212,19 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
         sheets.add(zSheet);
 
         // write headers
-        for (final WritableSheet sheet : sheets) {
-            XLSUtil.setCellString(sheet, COL_TRACK_GP, 0, "Group");
-            XLSUtil.setCellString(sheet, COL_TRACK_ID, 0, "Track #");
-            XLSUtil.setCellString(sheet, COL_TRACK_START, 0, "Start (" + timeUnit + ")");
-            XLSUtil.setCellString(sheet, COL_TRACK_END, 0, "End (" + timeUnit + ")");
-            XLSUtil.setCellString(sheet, COL_DURATION, 0, "Duration (" + timeUnit + ")");
-            XLSUtil.setCellString(sheet, COL_TOT_DISP, 0, "Total disp. (" + spaceUnit + ")");
-            XLSUtil.setCellString(sheet, COL_NET_DISP, 0, "Net disp. (" + spaceUnit + ")");
-            XLSUtil.setCellString(sheet, COL_LINEARITY, 0, "Linearity" + " (%)");
-            XLSUtil.setCellString(sheet, COL_RADIUS, 0, "Search radius" + " (" + spaceUnit + ")");
-            XLSUtil.setCellString(sheet, COL_MIN_DISP, 0, "Min. " + speedUnit);
-            XLSUtil.setCellString(sheet, COL_MAX_DISP, 0, "Max. " + speedUnit);
-            XLSUtil.setCellString(sheet, COL_AVG_DISP, 0, "Avg. " + speedUnit);
+        for (final Sheet sheet : sheets) {
+            XLSXUtil.setCellString(sheet, COL_TRACK_GP, 0, "Group");
+            XLSXUtil.setCellString(sheet, COL_TRACK_ID, 0, "Track #");
+            XLSXUtil.setCellString(sheet, COL_TRACK_START, 0, "Start (" + timeUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_TRACK_END, 0, "End (" + timeUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_DURATION, 0, "Duration (" + timeUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_TOT_DISP, 0, "Total disp. (" + spaceUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_NET_DISP, 0, "Net disp. (" + spaceUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_LINEARITY, 0, "Linearity" + " (%)");
+            XLSXUtil.setCellString(sheet, COL_RADIUS, 0, "Search radius" + " (" + spaceUnit + ")");
+            XLSXUtil.setCellString(sheet, COL_MIN_DISP, 0, "Min. " + speedUnit);
+            XLSXUtil.setCellString(sheet, COL_MAX_DISP, 0, "Max. " + speedUnit);
+            XLSXUtil.setCellString(sheet, COL_AVG_DISP, 0, "Avg. " + speedUnit);
         }
 
         final List<TrackStatistic> stats = computeTracksStatistics(
@@ -234,65 +244,65 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
                 continue;
 
             // store in the spreadsheet
-            XLSUtil.setCellString(globalSheet, COL_TRACK_GP, row, ts.groupName);
-            XLSUtil.setCellString(xSheet, COL_TRACK_GP, row, ts.groupName);
-            XLSUtil.setCellString(ySheet, COL_TRACK_GP, row, ts.groupName);
-            XLSUtil.setCellString(zSheet, COL_TRACK_GP, row, ts.groupName);
+            XLSXUtil.setCellString(globalSheet, COL_TRACK_GP, row, ts.groupName);
+            XLSXUtil.setCellString(xSheet, COL_TRACK_GP, row, ts.groupName);
+            XLSXUtil.setCellString(ySheet, COL_TRACK_GP, row, ts.groupName);
+            XLSXUtil.setCellString(zSheet, COL_TRACK_GP, row, ts.groupName);
 
-            XLSUtil.setCellNumber(globalSheet, COL_TRACK_ID, row, ts.id);
-            XLSUtil.setCellNumber(xSheet, COL_TRACK_ID, row, ts.id);
-            XLSUtil.setCellNumber(ySheet, COL_TRACK_ID, row, ts.id);
-            XLSUtil.setCellNumber(zSheet, COL_TRACK_ID, row, ts.id);
+            XLSXUtil.setCellNumber(globalSheet, COL_TRACK_ID, row, ts.id);
+            XLSXUtil.setCellNumber(xSheet, COL_TRACK_ID, row, ts.id);
+            XLSXUtil.setCellNumber(ySheet, COL_TRACK_ID, row, ts.id);
+            XLSXUtil.setCellNumber(zSheet, COL_TRACK_ID, row, ts.id);
 
-            XLSUtil.setCellNumber(globalSheet, COL_TRACK_START, row, ts.startTime);
-            XLSUtil.setCellNumber(xSheet, COL_TRACK_START, row, ts.startTime);
-            XLSUtil.setCellNumber(ySheet, COL_TRACK_START, row, ts.startTime);
-            XLSUtil.setCellNumber(zSheet, COL_TRACK_START, row, ts.startTime);
+            XLSXUtil.setCellNumber(globalSheet, COL_TRACK_START, row, ts.startTime);
+            XLSXUtil.setCellNumber(xSheet, COL_TRACK_START, row, ts.startTime);
+            XLSXUtil.setCellNumber(ySheet, COL_TRACK_START, row, ts.startTime);
+            XLSXUtil.setCellNumber(zSheet, COL_TRACK_START, row, ts.startTime);
 
-            XLSUtil.setCellNumber(globalSheet, COL_TRACK_END, row, ts.endTime);
-            XLSUtil.setCellNumber(xSheet, COL_TRACK_END, row, ts.endTime);
-            XLSUtil.setCellNumber(ySheet, COL_TRACK_END, row, ts.endTime);
-            XLSUtil.setCellNumber(zSheet, COL_TRACK_END, row, ts.endTime);
+            XLSXUtil.setCellNumber(globalSheet, COL_TRACK_END, row, ts.endTime);
+            XLSXUtil.setCellNumber(xSheet, COL_TRACK_END, row, ts.endTime);
+            XLSXUtil.setCellNumber(ySheet, COL_TRACK_END, row, ts.endTime);
+            XLSXUtil.setCellNumber(zSheet, COL_TRACK_END, row, ts.endTime);
 
-            XLSUtil.setCellNumber(globalSheet, COL_DURATION, row, ts.duration);
-            XLSUtil.setCellNumber(xSheet, COL_DURATION, row, ts.duration);
-            XLSUtil.setCellNumber(ySheet, COL_DURATION, row, ts.duration);
-            XLSUtil.setCellNumber(zSheet, COL_DURATION, row, ts.duration);
+            XLSXUtil.setCellNumber(globalSheet, COL_DURATION, row, ts.duration);
+            XLSXUtil.setCellNumber(xSheet, COL_DURATION, row, ts.duration);
+            XLSXUtil.setCellNumber(ySheet, COL_DURATION, row, ts.duration);
+            XLSXUtil.setCellNumber(zSheet, COL_DURATION, row, ts.duration);
 
-            XLSUtil.setCellNumber(globalSheet, COL_TOT_DISP, row, ts.global.totalDisp);
-            XLSUtil.setCellNumber(xSheet, COL_TOT_DISP, row, ts.x.totalDisp);
-            XLSUtil.setCellNumber(ySheet, COL_TOT_DISP, row, ts.y.totalDisp);
-            XLSUtil.setCellNumber(zSheet, COL_TOT_DISP, row, ts.z.totalDisp);
+            XLSXUtil.setCellNumber(globalSheet, COL_TOT_DISP, row, ts.global.totalDisp);
+            XLSXUtil.setCellNumber(xSheet, COL_TOT_DISP, row, ts.x.totalDisp);
+            XLSXUtil.setCellNumber(ySheet, COL_TOT_DISP, row, ts.y.totalDisp);
+            XLSXUtil.setCellNumber(zSheet, COL_TOT_DISP, row, ts.z.totalDisp);
 
-            XLSUtil.setCellNumber(globalSheet, COL_NET_DISP, row, ts.global.netDisp);
-            XLSUtil.setCellNumber(xSheet, COL_NET_DISP, row, ts.x.netDisp);
-            XLSUtil.setCellNumber(ySheet, COL_NET_DISP, row, ts.y.netDisp);
-            XLSUtil.setCellNumber(zSheet, COL_NET_DISP, row, ts.z.netDisp);
+            XLSXUtil.setCellNumber(globalSheet, COL_NET_DISP, row, ts.global.netDisp);
+            XLSXUtil.setCellNumber(xSheet, COL_NET_DISP, row, ts.x.netDisp);
+            XLSXUtil.setCellNumber(ySheet, COL_NET_DISP, row, ts.y.netDisp);
+            XLSXUtil.setCellNumber(zSheet, COL_NET_DISP, row, ts.z.netDisp);
 
-            XLSUtil.setCellNumber(globalSheet, COL_LINEARITY, row, ts.global.linearity);
-            XLSUtil.setCellNumber(xSheet, COL_LINEARITY, row, ts.x.linearity);
-            XLSUtil.setCellNumber(ySheet, COL_LINEARITY, row, ts.y.linearity);
-            XLSUtil.setCellNumber(zSheet, COL_LINEARITY, row, ts.z.linearity);
+            XLSXUtil.setCellNumber(globalSheet, COL_LINEARITY, row, ts.global.linearity);
+            XLSXUtil.setCellNumber(xSheet, COL_LINEARITY, row, ts.x.linearity);
+            XLSXUtil.setCellNumber(ySheet, COL_LINEARITY, row, ts.y.linearity);
+            XLSXUtil.setCellNumber(zSheet, COL_LINEARITY, row, ts.z.linearity);
 
-            XLSUtil.setCellNumber(globalSheet, COL_RADIUS, row, ts.global.searchRadius);
-            XLSUtil.setCellNumber(xSheet, COL_RADIUS, row, ts.x.searchRadius);
-            XLSUtil.setCellNumber(ySheet, COL_RADIUS, row, ts.y.searchRadius);
-            XLSUtil.setCellNumber(zSheet, COL_RADIUS, row, ts.z.searchRadius);
+            XLSXUtil.setCellNumber(globalSheet, COL_RADIUS, row, ts.global.searchRadius);
+            XLSXUtil.setCellNumber(xSheet, COL_RADIUS, row, ts.x.searchRadius);
+            XLSXUtil.setCellNumber(ySheet, COL_RADIUS, row, ts.y.searchRadius);
+            XLSXUtil.setCellNumber(zSheet, COL_RADIUS, row, ts.z.searchRadius);
 
-            XLSUtil.setCellNumber(globalSheet, COL_MIN_DISP, row, ts.global.minDispOrSpeed);
-            XLSUtil.setCellNumber(xSheet, COL_MIN_DISP, row, ts.x.minDispOrSpeed);
-            XLSUtil.setCellNumber(ySheet, COL_MIN_DISP, row, ts.y.minDispOrSpeed);
-            XLSUtil.setCellNumber(zSheet, COL_MIN_DISP, row, ts.z.minDispOrSpeed);
+            XLSXUtil.setCellNumber(globalSheet, COL_MIN_DISP, row, ts.global.minDispOrSpeed);
+            XLSXUtil.setCellNumber(xSheet, COL_MIN_DISP, row, ts.x.minDispOrSpeed);
+            XLSXUtil.setCellNumber(ySheet, COL_MIN_DISP, row, ts.y.minDispOrSpeed);
+            XLSXUtil.setCellNumber(zSheet, COL_MIN_DISP, row, ts.z.minDispOrSpeed);
 
-            XLSUtil.setCellNumber(globalSheet, COL_MAX_DISP, row, ts.global.maxDispOrSpeed);
-            XLSUtil.setCellNumber(xSheet, COL_MAX_DISP, row, ts.x.maxDispOrSpeed);
-            XLSUtil.setCellNumber(ySheet, COL_MAX_DISP, row, ts.y.maxDispOrSpeed);
-            XLSUtil.setCellNumber(zSheet, COL_MAX_DISP, row, ts.z.maxDispOrSpeed);
+            XLSXUtil.setCellNumber(globalSheet, COL_MAX_DISP, row, ts.global.maxDispOrSpeed);
+            XLSXUtil.setCellNumber(xSheet, COL_MAX_DISP, row, ts.x.maxDispOrSpeed);
+            XLSXUtil.setCellNumber(ySheet, COL_MAX_DISP, row, ts.y.maxDispOrSpeed);
+            XLSXUtil.setCellNumber(zSheet, COL_MAX_DISP, row, ts.z.maxDispOrSpeed);
 
-            XLSUtil.setCellNumber(globalSheet, COL_AVG_DISP, row, ts.global.meanDispOrSpeed);
-            XLSUtil.setCellNumber(xSheet, COL_AVG_DISP, row, ts.x.meanDispOrSpeed);
-            XLSUtil.setCellNumber(ySheet, COL_AVG_DISP, row, ts.y.meanDispOrSpeed);
-            XLSUtil.setCellNumber(zSheet, COL_AVG_DISP, row, ts.z.meanDispOrSpeed);
+            XLSXUtil.setCellNumber(globalSheet, COL_AVG_DISP, row, ts.global.meanDispOrSpeed);
+            XLSXUtil.setCellNumber(xSheet, COL_AVG_DISP, row, ts.x.meanDispOrSpeed);
+            XLSXUtil.setCellNumber(ySheet, COL_AVG_DISP, row, ts.y.meanDispOrSpeed);
+            XLSXUtil.setCellNumber(zSheet, COL_AVG_DISP, row, ts.z.meanDispOrSpeed);
 
             row++;
         }
@@ -302,7 +312,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
 
     /**
      * Get motion data in XLS (WorkBook) format from the given list of {@link TrackSegment}.<br>
-     * WARNING: you need to explicitly use {@link XLSUtil#saveAndClose(WritableWorkbook)} method to
+     * WARNING: you need to explicitly use {@link XLSXUtil#saveAndClose(Workbook, File)} method to
      * save the obtained XLS into <code>outputPath</code>
      *
      * @param tracks                  tracks we want to export data fort
@@ -313,9 +323,9 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
      * @param ignoreFilteredDetection do not compute statistics for filtered detection (see
      *                                {@link TrackSegment#isAllDetectionEnabled()})
      * @param outputPath              XLS output path (should contains <i>.xls</i> extension)
-     * @return the filled {@link WritableWorkbook} ready to save on disk.
+     * @return the filled {@link Workbook} ready to save on disk.
      */
-    public static WritableWorkbook getTrackMotionXLS(
+    public static @NotNull Workbook getTrackMotionXLS(
             final Collection<TrackSegment> tracks,
             final Sequence sequence,
             final boolean displaySpeed,
@@ -347,7 +357,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
         tracks = new Var<>("Track group", new TrackGroup(null));
         sequence = new VarSequence("Sequence (for units info.)", null);
         displaySpeed = new VarBoolean("Get speed instead of disp.", false);
-        outputFile = new VarMutable("Output file", null) {
+        outputFile = new VarMutable("Output file (XLSX)", null) {
             @Override
             public boolean isAssignableFrom(final Var source) {
                 return (String.class == source.getType()) || (File.class == source.getType());
@@ -356,7 +366,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
     }
 
     @Override
-    public void declareInput(final VarList inputMap) {
+    public void declareInput(final @NotNull VarList inputMap) {
         inputMap.add("trackgroup", tracks);
         inputMap.add("sequence", sequence);
         inputMap.add("displaySpeed", displaySpeed);
@@ -391,7 +401,7 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
 
             try {
                 // get track motion info
-                final WritableWorkbook wb = getTrackMotionXLS(
+                final Workbook wb = getTrackMotionXLS(
                         tracksToExport,
                         sequence.getValue(),
                         displaySpeed.getValue(),
@@ -399,16 +409,11 @@ public class MotionProfiler extends Plugin implements Block, PluginBundled {
                         f.getAbsolutePath()
                 );
                 // save them
-                XLSUtil.saveAndClose(wb);
+                XLSXUtil.saveAndClose(wb, f);
             }
             catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    @Override
-    public String getMainPluginClassName() {
-        return SpeedProfiler.class.getName();
     }
 }

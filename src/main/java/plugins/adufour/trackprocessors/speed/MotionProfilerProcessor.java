@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,18 +18,20 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.file.FileUtil;
-import icy.gui.component.ExcelTable;
-import icy.gui.dialog.MessageDialog;
-import icy.gui.dialog.SaveDialog;
-import icy.gui.frame.progress.AnnounceFrame;
-import icy.plugin.interface_.PluginBundled;
-import icy.preferences.XMLPreferences;
-import icy.sequence.Sequence;
-import icy.system.IcyExceptionHandler;
-import icy.util.XLSUtil;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.gui.component.scrollpane.ExcelTable;
+import org.bioimageanalysis.icy.gui.dialog.MessageDialog;
+import org.bioimageanalysis.icy.gui.dialog.SaveDialog;
+import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
+import org.bioimageanalysis.icy.io.FileUtil;
+import org.bioimageanalysis.icy.io.xls.XLSXUtil;
+import org.bioimageanalysis.icy.model.sequence.Sequence;
+import org.bioimageanalysis.icy.system.logging.IcyLogger;
+import org.bioimageanalysis.icy.system.preferences.XMLPreferences;
+import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
 import org.math.plot.PlotPanel;
@@ -41,7 +43,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class MotionProfilerProcessor extends PluginTrackManagerProcessor implements PluginBundled {
+@IcyPluginName("Motion Profile Processor")
+@IcyPluginIcon(path = "/motion-profiler.png")
+public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     private JCheckBox useRealUnits;
     private JCheckBox showSpeed;
 
@@ -124,7 +128,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         export.addActionListener(arg0 -> new Thread(() -> {
             // Restore last used folder
             final String xlsFolder = preferences.get("xlsFolder", null);
-            final String path = SaveDialog.chooseFile("Export motion data", xlsFolder, "Speed", ".xls");
+            final String path = SaveDialog.chooseFile("Export motion data", xlsFolder, "Speed", ".xlsx");
 
             if (path == null)
                 return;
@@ -193,14 +197,17 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
                 // dummy XLS file
                 final File tmpFile = File.createTempFile("Motion profiler", "xls");
                 // get workbook
-                final WritableWorkbook workbook = getStatistics(tmpFile.getAbsolutePath(), xPlot, yPlot, zPlot,
-                        globalPlot);
+                final Workbook workbook = getStatistics(tmpFile.getAbsolutePath(), xPlot, yPlot, zPlot, globalPlot);
 
                 // get the generated sheets
-                final WritableSheet globalSheet = workbook.getSheet("Global");
-                final WritableSheet xSheet = workbook.getSheet("X");
-                final WritableSheet ySheet = workbook.getSheet("Y");
-                final WritableSheet zSheet = workbook.getSheet("Z");
+                //final Sheet globalSheet = workbook.getSheet("Global");
+                final Sheet globalSheet = XLSXUtil.getPage(workbook, "Global");
+                //final Sheet xSheet = workbook.getSheet("X");
+                final Sheet xSheet = XLSXUtil.getPage(workbook, "X");
+                //final Sheet ySheet = workbook.getSheet("Y");
+                final Sheet ySheet = XLSXUtil.getPage(workbook, "Y");
+                //final Sheet zSheet = workbook.getSheet("Z");
+                final Sheet zSheet = XLSXUtil.getPage(workbook, "Z");
 
                 // X display
                 final ExcelTable xTable = new ExcelTable(xSheet);
@@ -238,8 +245,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
                     tmpFile.deleteOnExit();
             }
             catch (final Exception e) {
-                System.err.println("[Motion Profiler] Unable to generate XLS motion statistics;");
-                IcyExceptionHandler.showErrorMessage(e, true);
+                IcyLogger.error(this.getClass(), e, "Unable to generate XLSX motion statistics;");
             }
         }
         finally {
@@ -252,7 +258,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         Compute();
     }
 
-    private WritableWorkbook getStatistics(
+    private @NotNull Workbook getStatistics(
             final String path,
             final Plot2DPanel xPlotPanel,
             final Plot2DPanel yPlotPanel,
@@ -273,7 +279,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
         );
     }
 
-    private WritableWorkbook getStatistics(final String path) throws IOException {
+    private @NotNull Workbook getStatistics(final String path) throws IOException {
         // get workbook from temp XLS file
         return getStatistics(path, null, null, null, null);
     }
@@ -281,17 +287,12 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor impleme
     void export(final String path) {
         try {
             // get workbook with wanted output path
-            final WritableWorkbook wb = getStatistics(path);
+            final Workbook wb = getStatistics(path);
             // save them
-            XLSUtil.saveAndClose(wb);
+            XLSXUtil.saveAndClose(wb, new File(path));
         }
         catch (final Exception e) {
             MessageDialog.showDialog("Cannot export file", MessageDialog.ERROR_MESSAGE);
         }
-    }
-
-    @Override
-    public String getMainPluginClassName() {
-        return SpeedProfiler.class.getName();
     }
 }

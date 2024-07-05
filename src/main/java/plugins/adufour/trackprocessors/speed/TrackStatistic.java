@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,7 +18,9 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.math.ArrayMath;
+import org.bioimageanalysis.icy.common.math.ArrayMath;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
 import org.math.plot.PlotPanel;
@@ -86,8 +88,9 @@ public class TrackStatistic {
      * @return motion/speed statistics for the given track, it can return <code>null</code> if track
      * is completely filtered (see <i>ignoreFilteredDetection</i> parameter).
      */
-    public static TrackStatistic computeStatistic(
-            final TrackSegment track,
+    @SuppressWarnings("SuspiciousNameCombination")
+    public static @Nullable TrackStatistic computeStatistic(
+            final @NotNull TrackSegment track,
             final double xScale,
             final double yScale,
             final double zScale,

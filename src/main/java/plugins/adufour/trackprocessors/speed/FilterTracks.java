@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,9 +18,12 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.plugin.abstract_.Plugin;
-import icy.plugin.interface_.PluginBundled;
-import icy.sequence.Sequence;
+import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.model.sequence.Sequence;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
 import plugins.adufour.vars.lang.*;
@@ -31,9 +34,11 @@ import plugins.nchenouard.spot.Detection;
 import java.util.*;
 
 /**
- * @author Stephane
+ * @author Stephane Dallongeville
  */
-public class FilterTracks extends Plugin implements Block, PluginBundled {
+@IcyPluginName("Filter Tracks")
+@IcyPluginIcon(path = "/motion-profiler.png")
+public class FilterTracks extends Plugin implements Block {
     public enum Criterion {
         CRITERION_T_START("start time"), CRITERION_CURRENT_T("current time"), CRITERION_T_END("end time"),
         CRITERION_DURATION("track duration"), CRITERION_TOT_DISP("total displacement"),
@@ -43,10 +48,12 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
 
         final String description;
 
+        @Contract(pure = true)
         Criterion(final String description) {
             this.description = description;
         }
 
+        @Contract(pure = true)
         @Override
         public String toString() {
             return description;
@@ -58,21 +65,21 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
 
         private final String symbol;
 
+        @Contract(pure = true)
         ComparisonType(final String symbol) {
             this.symbol = symbol;
         }
 
+        @Contract(pure = true)
         boolean compare(final double d1, final double d2) {
-            switch (this) {
-                case GREATER_THAN:
-                    return d1 > d2;
-                case LOWER_THAN:
-                    return d1 < d2;
-                default:
-                    throw new UnsupportedOperationException("Unknown operation: " + this);
-            }
+            return switch (this) {
+                case GREATER_THAN -> d1 > d2;
+                case LOWER_THAN -> d1 < d2;
+                //default -> throw new UnsupportedOperationException("Unknown operation: " + this);
+            };
         }
 
+        @Contract(pure = true)
         @Override
         public String toString() {
             return symbol;
@@ -85,7 +92,7 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
      * @param track segment of track
      * @return boolean
      **/
-    public static boolean isTrackEnabled(final TrackSegment track) {
+    public static boolean isTrackEnabled(final @NotNull TrackSegment track) {
         for (final Detection detection : track.getDetectionList())
             if (detection.isEnabled())
                 return true;
@@ -224,7 +231,7 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
      *                            modified
      * @return filtered list of track (tracks replying to the filter criterion)
      */
-    public static Set<TrackSegment> filterTracks(
+    public static @NotNull Set<TrackSegment> filterTracks(
             final Collection<TrackSegment> tracks,
             final Criterion criterion,
             final ComparisonType comp,
@@ -280,7 +287,7 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
     }
 
     @Override
-    public void declareInput(final VarList inputMap) {
+    public void declareInput(final @NotNull VarList inputMap) {
         inputMap.add("trackgroup", tracks);
         inputMap.add("sequence", sequence);
         inputMap.add("useRealUnitss", useRealUnits);
@@ -318,10 +325,5 @@ public class FilterTracks extends Plugin implements Block, PluginBundled {
                     true
             );
         }
-    }
-
-    @Override
-    public String getMainPluginClassName() {
-        return SpeedProfiler.class.getName();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,7 +18,9 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import icy.plugin.abstract_.Plugin;
+import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
 
 /**
  * TrackManager plug-in that compute motion and speed statistics from tracks and filter them based
@@ -26,6 +28,8 @@ import icy.plugin.abstract_.Plugin;
  *
  * @author Alexandre Dufour
  */
+@IcyPluginName("Speed Profiler")
+@IcyPluginIcon(path = "/motion-profiler.png")
 public class SpeedProfiler extends Plugin {
     // old class name, need to preserve it to identify the plugin.
     public SpeedProfiler() {
