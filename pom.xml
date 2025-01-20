@@ -8,12 +8,12 @@
     <parent>
 		<artifactId>pom-icy</artifactId>
         <groupId>org.bioimageanalysis.icy</groupId>
-        <version>2.1.0</version>
+        <version>2.1.7</version>
 	</parent>
 
     <!-- Project Information -->
     <artifactId>motion-profiler</artifactId>
-    <version>4.2.0</version>
+    <version>4.2.1</version>
 
     <packaging>jar</packaging>
 
@@ -61,11 +61,6 @@
         </developer>
     </developers>
 
-    <!-- Project properties -->
-    <properties>
-
-    </properties>
-
     <!-- List of project's dependencies -->
     <dependencies>
         <!-- The core of Icy -->
@@ -97,6 +92,16 @@
             <artifactId>track-manager</artifactId>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.bioimageanalysis.icy</groupId>
+                <artifactId>vecmath</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- Icy Maven repository (to find parent POM) -->
     <repositories>
