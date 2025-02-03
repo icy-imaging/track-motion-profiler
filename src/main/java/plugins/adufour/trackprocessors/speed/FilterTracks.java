@@ -37,7 +37,7 @@ import java.util.*;
  * @author Stephane Dallongeville
  */
 @IcyPluginName("Filter Tracks")
-@IcyPluginIcon(path = "/motion-profiler.png")
+@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class FilterTracks extends Plugin implements Block {
     public enum Criterion {
         CRITERION_T_START("start time"), CRITERION_CURRENT_T("current time"), CRITERION_T_END("end time"),

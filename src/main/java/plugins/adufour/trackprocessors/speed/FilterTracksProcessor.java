@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @IcyPluginName("Filter Tracks Processor")
-@IcyPluginIcon(path = "/motion-profiler.png")
+@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class FilterTracksProcessor extends PluginTrackManagerProcessor {
     private JLabel dispUnit;
 
@@ -93,7 +93,7 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor {
         filter_panel.add(filter_value);
         filter_panel.add(dispUnit);
         filter_value.setNumericValue(3);
-        filter_value.addValueListener((newValue, validate) -> {
+        filter_value.addValueListener((_, validate) -> {
             if (validate)
                 trackPool.fireTrackEditorProcessorChange();
         });

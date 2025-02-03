@@ -44,7 +44,7 @@ import java.io.File;
 import java.io.IOException;
 
 @IcyPluginName("Motion Profile Processor")
-@IcyPluginIcon(path = "/motion-profiler.png")
+@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     private JCheckBox useRealUnits;
     private JCheckBox showSpeed;
@@ -62,7 +62,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     // internal
     XMLPreferences preferences;
 
-    private final ActionListener updater = arg0 -> trackPool.fireTrackEditorProcessorChange();
+    private final ActionListener updater = _ -> trackPool.fireTrackEditorProcessorChange();
 
     public MotionProfilerProcessor() {
         super();
@@ -195,7 +195,8 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
 
             try {
                 // dummy XLS file
-                final File tmpFile = File.createTempFile("Motion profiler", "xls");
+                final File tmpFile = new File(FileUtil.getTempDirectory(), "Motion profiler.xlsx");
+                //final File tmpFile = File.createTempFile("Motion profiler", "xls");
                 // get workbook
                 final Workbook workbook = getStatistics(tmpFile.getAbsolutePath(), xPlot, yPlot, zPlot, globalPlot);
 

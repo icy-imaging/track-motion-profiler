@@ -28,6 +28,7 @@ import org.bioimageanalysis.icy.io.xls.XLSXUtil;
 import org.bioimageanalysis.icy.model.sequence.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
+import org.math.plot.Plot3DPanel;
 import org.math.plot.PlotPanel;
 import plugins.adufour.blocks.lang.Block;
 import plugins.adufour.blocks.util.VarList;
@@ -48,7 +49,7 @@ import java.util.List;
  * @author Stephane Dallongeville
  */
 @IcyPluginName("Motion Profiler")
-@IcyPluginIcon(path = "/motion-profiler.png")
+@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class MotionProfiler extends Plugin implements Block {
     private static final int COL_TRACK_GP = 0;
     private static final int COL_TRACK_ID = 1;
@@ -148,6 +149,37 @@ public class MotionProfiler extends Plugin implements Block {
             // add stat to result (even if null to preserve consistency with input collection)
             result.add(stat);
             index++;
+        }
+
+        // Center the plot
+        if (globalPlotPanel != null) {
+            final double minX = globalPlotPanel.plotCanvas.base.getMinBounds()[0];
+            final double minY = globalPlotPanel.plotCanvas.base.getMinBounds()[1];
+
+            final double maxX = globalPlotPanel.plotCanvas.base.getMaxBounds()[0];
+            final double maxY = globalPlotPanel.plotCanvas.base.getMaxBounds()[1];
+
+            double maxVal = 0d;
+            maxVal = Math.max(maxVal, Math.max(maxX, maxY));
+
+            double minVal = 0d;
+            minVal = Math.min(minVal, Math.min(minX, minY));
+
+            if (globalPlotPanel instanceof Plot3DPanel) {
+                final double minZ = globalPlotPanel.plotCanvas.base.getMinBounds()[2];
+                final double maxZ = globalPlotPanel.plotCanvas.base.getMaxBounds()[2];
+
+                maxVal = Math.max(maxVal, maxZ);
+                minVal = Math.min(minVal, minZ);
+            }
+
+            final double setVal = Math.ceil(Math.max(Math.abs(maxVal), Math.abs(minVal)));
+
+            globalPlotPanel.plotCanvas.setFixedBounds(0, -setVal, setVal);
+            globalPlotPanel.plotCanvas.setFixedBounds(1, -setVal, setVal);
+
+            if (globalPlotPanel instanceof Plot3DPanel)
+                globalPlotPanel.plotCanvas.setFixedBounds(2, -setVal, setVal);
         }
 
         return result;

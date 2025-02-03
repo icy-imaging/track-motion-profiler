@@ -8,12 +8,12 @@
     <parent>
         <artifactId>pom-icy</artifactId>
         <groupId>org.bioimageanalysis.icy</groupId>
-        <version>3.0.0-a.1</version>
+        <version>3.0.0-a.3</version>
     </parent>
 
     <!-- Project Information -->
     <artifactId>motion-profiler</artifactId>
-    <version>5.0.0-a.1</version>
+    <version>5.0.0-a.2</version>
 
     <name>Motion Profiler</name>
     <description>Convert ROI to a Distance Map</description>
@@ -82,12 +82,4 @@
             <artifactId>track-manager</artifactId>
         </dependency>
     </dependencies>
-
-    <!-- Icy Maven repository (to find parent POM) -->
-    <repositories>
-        <repository>
-            <id>icy</id>
-            <url>https://nexus-icy.pasteur.cloud/repository/icy/</url>
-        </repository>
-    </repositories>
 </project>
