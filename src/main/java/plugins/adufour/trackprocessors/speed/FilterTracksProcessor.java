@@ -93,7 +93,7 @@ public class FilterTracksProcessor extends PluginTrackManagerProcessor {
         filter_panel.add(filter_value);
         filter_panel.add(dispUnit);
         filter_value.setNumericValue(3);
-        filter_value.addValueListener((_, validate) -> {
+        filter_value.addValueListener((d, validate) -> {
             if (validate)
                 trackPool.fireTrackEditorProcessorChange();
         });

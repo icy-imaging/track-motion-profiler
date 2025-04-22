@@ -43,7 +43,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-@IcyPluginName("Motion Profile Processor")
+@IcyPluginName("Motion Profiler Processor")
 @IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     private JCheckBox useRealUnits;
@@ -62,7 +62,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     // internal
     XMLPreferences preferences;
 
-    private final ActionListener updater = _ -> trackPool.fireTrackEditorProcessorChange();
+    private final ActionListener updater = e -> trackPool.fireTrackEditorProcessorChange();
 
     public MotionProfilerProcessor() {
         super();
