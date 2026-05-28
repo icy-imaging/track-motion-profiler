@@ -18,12 +18,11 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import org.bioimageanalysis.icy.Icy;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
-import org.bioimageanalysis.icy.gui.component.field.NumberTextField;
-import org.bioimageanalysis.icy.model.overlay.Overlay;
-import org.bioimageanalysis.icy.model.sequence.Sequence;
+import fr.icy.Icy;
+import fr.icy.extension.plugin.annotation_.IcyPluginName;
+import fr.icy.gui.component.field.NumberTextField;
+import fr.icy.model.overlay.Overlay;
+import fr.icy.model.sequence.Sequence;
 import plugins.adufour.trackprocessors.speed.FilterTracks.ComparisonType;
 import plugins.adufour.trackprocessors.speed.FilterTracks.Criterion;
 import plugins.fab.trackmanager.PluginTrackManagerProcessor;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @IcyPluginName("Filter Tracks Processor")
-@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class FilterTracksProcessor extends PluginTrackManagerProcessor {
     private JLabel dispUnit;
 

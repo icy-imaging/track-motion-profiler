@@ -20,17 +20,16 @@ package plugins.adufour.trackprocessors.speed;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
-import org.bioimageanalysis.icy.gui.component.scrollpane.ExcelTable;
-import org.bioimageanalysis.icy.gui.dialog.MessageDialog;
-import org.bioimageanalysis.icy.gui.dialog.SaveDialog;
-import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
-import org.bioimageanalysis.icy.io.FileUtil;
-import org.bioimageanalysis.icy.io.xls.XLSXUtil;
-import org.bioimageanalysis.icy.model.sequence.Sequence;
-import org.bioimageanalysis.icy.system.logging.IcyLogger;
-import org.bioimageanalysis.icy.system.preferences.XMLPreferences;
+import fr.icy.extension.plugin.annotation_.IcyPluginName;
+import fr.icy.gui.component.scrollpane.ExcelTable;
+import fr.icy.gui.dialog.MessageDialog;
+import fr.icy.gui.dialog.SaveDialog;
+import fr.icy.gui.frame.progress.AnnounceFrame;
+import fr.icy.io.FileUtil;
+import fr.icy.io.xls.XLSXUtil;
+import fr.icy.model.sequence.Sequence;
+import fr.icy.system.logging.IcyLogger;
+import fr.icy.system.preferences.XMLPreferences;
 import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
@@ -44,7 +43,6 @@ import java.io.File;
 import java.io.IOException;
 
 @IcyPluginName("Motion Profiler Processor")
-@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
     private JCheckBox useRealUnits;
     private JCheckBox showSpeed;

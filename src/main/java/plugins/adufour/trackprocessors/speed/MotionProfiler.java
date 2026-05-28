@@ -20,12 +20,11 @@ package plugins.adufour.trackprocessors.speed;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.bioimageanalysis.icy.common.string.StringUtil;
-import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
-import org.bioimageanalysis.icy.io.xls.XLSXUtil;
-import org.bioimageanalysis.icy.model.sequence.Sequence;
+import fr.icy.common.string.StringUtil;
+import fr.icy.extension.plugin.abstract_.Plugin;
+import fr.icy.extension.plugin.annotation_.IcyPluginName;
+import fr.icy.io.xls.XLSXUtil;
+import fr.icy.model.sequence.Sequence;
 import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
 import org.math.plot.Plot3DPanel;
@@ -49,7 +48,6 @@ import java.util.List;
  * @author Stephane Dallongeville
  */
 @IcyPluginName("Motion Profiler")
-@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class MotionProfiler extends Plugin implements Block {
     private static final int COL_TRACK_GP = 0;
     private static final int COL_TRACK_ID = 1;

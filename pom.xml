@@ -4,82 +4,105 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Inherited Icy Parent POM -->
     <parent>
+        <groupId>fr.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <groupId>org.bioimageanalysis.icy</groupId>
-        <version>3.0.0-a.4</version>
+        <version>3.0.0-a.7</version>
     </parent>
 
-    <!-- Project Information -->
-    <artifactId>motion-profiler</artifactId>
-    <version>5.0.0-a.3</version>
+    <groupId>fr.icy.extensions</groupId>
+    <artifactId>track-motion-profiler</artifactId>
+    <version>5.0.0-a.7</version>
 
     <name>Motion Profiler</name>
     <description>Convert ROI to a Distance Map</description>
+    <url>https://icy.bioimageanalysis.org</url>
     <inceptionYear>2020</inceptionYear>
+
+    <scm>
+        <url>https://gitlab.pasteur.fr/bia/icy/extensions/track-motion-profiler</url>
+        <tag>v${project.version}</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitLab Issues</system>
+        <url>https://gitlab.pasteur.fr/bia/icy/extensions/track-motion-profiler/-/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>GitLab CI</system>
+        <url>https://gitlab.pasteur.fr/bia/icy/extensions/track-motion-profiler/-/pipelines</url>
+    </ciManagement>
 
     <organization>
         <name>Institut Pasteur</name>
-        <url>https://pasteur.fr</url>
+        <url>https://www.pasteur.fr/</url>
     </organization>
 
     <licenses>
         <license>
-            <name>GNU GPLv3</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <name>GNU LGPLv3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
     <developers>
         <developer>
-            <id>sdallongeville</id>
-            <name>Stéphane Dallongeville</name>
-            <url>https://research.pasteur.fr/fr/member/stephane-dallongeville/</url>
-            <roles>
-                <role>founder</role>
-                <role>lead</role>
-                <role>architect</role>
-                <role>developer</role>
-                <role>debugger</role>
-                <role>tester</role>
-                <role>maintainer</role>
-                <role>support</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>atournay</id>
-            <name>Amandine Tournay</name>
-            <url>https://research.pasteur.fr/fr/member/amandine-tournay/</url>
-            <roles>
-                <role>maintainer</role>
-            </roles>
+            <id>tmusset</id>
+            <name>Thomas Musset</name>
+            <organization>Institut Pasteur</organization>
+            <organizationUrl>https://pasteur.fr</organizationUrl>
+            <url>https://icy.bioimageanalysis.org/author/tmusset/</url>
         </developer>
     </developers>
 
-    <!-- List of project's dependencies -->
+    <contributors>
+        <contributor>
+            <name>Stéphane Dallongeville</name>
+        </contributor>
+        <contributor>
+            <name>Amandine Tournay</name>
+        </contributor>
+    </contributors>
+
+    <mailingLists>
+        <mailingList>
+            <name>Icy</name>
+            <post>icy.team@pasteur.fr</post>
+        </mailingList>
+    </mailingLists>
+
+    <properties>
+        <license.licenseName>GNU LGPLv3</license.licenseName>
+        <license.copyrightOwners>Institut Pasteur</license.copyrightOwners>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
+            <groupId>fr.icy.extensions</groupId>
             <artifactId>ezplug</artifactId>
+            <version>${fr.icy.extensions.ezplug.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
+            <groupId>fr.icy.extensions</groupId>
             <artifactId>protocols</artifactId>
+            <version>${fr.icy.extensions.protocols.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.icy.extensions</groupId>
+            <artifactId>spot-detection-utilities</artifactId>
+            <version>2.0.0-a.7</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.icy.extensions</groupId>
+            <artifactId>track-manager</artifactId>
+            <version>2.0.0-a.7</version>
         </dependency>
 
         <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>jmath</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>spot-detection-utilities</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>track-manager</artifactId>
+            <groupId>com.github.yannrichet</groupId>
+            <artifactId>JMathPlot</artifactId>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 </project>

@@ -18,10 +18,9 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
-import org.bioimageanalysis.icy.model.sequence.Sequence;
+import fr.icy.extension.plugin.abstract_.Plugin;
+import fr.icy.extension.plugin.annotation_.IcyPluginName;
+import fr.icy.model.sequence.Sequence;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import plugins.adufour.blocks.lang.Block;
@@ -37,7 +36,6 @@ import java.util.*;
  * @author Stephane Dallongeville
  */
 @IcyPluginName("Filter Tracks")
-@IcyPluginIcon(path = "/plugins/adufour/trackprocessors/speed/motion-profiler.png")
 public class FilterTracks extends Plugin implements Block {
     public enum Criterion {
         CRITERION_T_START("start time"), CRITERION_CURRENT_T("current time"), CRITERION_T_END("end time"),

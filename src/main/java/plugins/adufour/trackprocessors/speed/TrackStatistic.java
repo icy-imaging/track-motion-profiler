@@ -18,7 +18,7 @@
 
 package plugins.adufour.trackprocessors.speed;
 
-import org.bioimageanalysis.icy.common.math.ArrayMath;
+import fr.icy.common.math.ArrayMath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
