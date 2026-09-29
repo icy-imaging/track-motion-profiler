@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2024. Institut Pasteur.
+ * Copyright (c) 2010-2026. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -28,7 +28,6 @@ import fr.icy.gui.frame.progress.AnnounceFrame;
 import fr.icy.io.FileUtil;
 import fr.icy.io.xls.XLSXUtil;
 import fr.icy.model.sequence.Sequence;
-import fr.icy.system.logging.IcyLogger;
 import fr.icy.system.preferences.XMLPreferences;
 import org.jetbrains.annotations.NotNull;
 import org.math.plot.Plot2DPanel;
@@ -41,9 +40,13 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @IcyPluginName("Motion Profiler Processor")
 public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
+    private static final Logger LOGGER = Logger.getLogger(MotionProfilerProcessor.class.getName());
+
     private JCheckBox useRealUnits;
     private JCheckBox showSpeed;
 
@@ -244,7 +247,8 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
                     tmpFile.deleteOnExit();
             }
             catch (final Exception e) {
-                IcyLogger.error(this.getClass(), e, "Unable to generate XLSX motion statistics;");
+                if (LOGGER.isLoggable(Level.SEVERE))
+                    LOGGER.log(Level.SEVERE, "Unable to generate XLSX motion statistics.", e);
             }
         }
         finally {
@@ -291,7 +295,7 @@ public class MotionProfilerProcessor extends PluginTrackManagerProcessor {
             XLSXUtil.saveAndClose(wb, new File(path));
         }
         catch (final Exception e) {
-            MessageDialog.showDialog("Cannot export file", MessageDialog.ERROR_MESSAGE);
+            MessageDialog.showDialog("Cannot export file", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

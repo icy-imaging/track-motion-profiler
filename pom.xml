@@ -7,16 +7,16 @@
     <parent>
         <groupId>fr.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <version>3.0.0-a.7</version>
+        <version>3.0.0-a.8-SNAPSHOT</version>
     </parent>
 
-    <groupId>fr.icy.extensions</groupId>
+    <groupId>fr.icy.extension</groupId>
     <artifactId>track-motion-profiler</artifactId>
-    <version>5.0.0-a.7</version>
+    <version>5.0.0-a.8-SNAPSHOT</version>
 
     <name>Motion Profiler</name>
     <description>Convert ROI to a Distance Map</description>
-    <url>https://icy.bioimageanalysis.org</url>
+    <url>http://icy.fr/</url>
     <inceptionYear>2020</inceptionYear>
 
     <scm>
@@ -58,10 +58,17 @@
 
     <contributors>
         <contributor>
+            <name>Alexandre Dufour</name>
+        </contributor>
+        <contributor>
             <name>Stéphane Dallongeville</name>
         </contributor>
         <contributor>
             <name>Amandine Tournay</name>
+        </contributor>
+        <contributor>
+            <name>Thomas Musset</name>
+            <properties><id>Azargas</id></properties>
         </contributor>
     </contributors>
 
@@ -79,24 +86,24 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.icy.extensions</groupId>
+            <groupId>fr.icy.extension</groupId>
             <artifactId>ezplug</artifactId>
-            <version>${fr.icy.extensions.ezplug.version}</version>
+            <version>${fr.icy.extension.ezplug.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.icy.extensions</groupId>
+            <groupId>fr.icy.extension</groupId>
             <artifactId>protocols</artifactId>
-            <version>${fr.icy.extensions.protocols.version}</version>
+            <version>${fr.icy.extension.protocols.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.icy.extensions</groupId>
+            <groupId>fr.icy.extension</groupId>
             <artifactId>spot-detection-utilities</artifactId>
-            <version>2.0.0-a.7</version>
+            <version>${fr.icy.extension.spot-detection-utilities.version}</version>
         </dependency>
         <dependency>
-            <groupId>fr.icy.extensions</groupId>
+            <groupId>fr.icy.extension</groupId>
             <artifactId>track-manager</artifactId>
-            <version>2.0.0-a.7</version>
+            <version>${fr.icy.extension.track-manager.version}</version>
         </dependency>
 
         <dependency>
